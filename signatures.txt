@@ -268,3 +268,47 @@ ng-click="jfSidebar.pinMenu();-- end ngRepeat: item in jfSidebar.menuItems --;di
 fromWebChromeNACL;console.log(e.source);var g_ocx = 0;g_backIvs;g_busernameEncrypt|Dahua IP Camera - New models require password at setup, old models admin/admin
 <title>Welcome to ntopng</title;/js/rickshaw.js;container-narrow;form_add_user;makeUsernameLowercase|ntopng admin/admin
 <title>Login</title;label id="login-username-label";label id="login-password-label;/data/managedMode.json;id="devname">EAP110</span>|TP-Link EAP100 admin/admin
+<title>MiVoice Video Phone</title>;var productName = "MiVoice Conference Phone";$("title").text(productName|MiVoice Conference Phone admin/admin
+<title>Mitel Standard;var urlbits = window.location.href.;td class="inputLabel">Username:Mitel Networks Corporation|Mitel Standard - admin/<setatinstall> or root/<setatinstall>
+<title ng-bind="manageCtrl.system.getName();UniFi'" class="ng-binding">UniFi</title>;translate="ACCOUNT_TITLE_HOTSPOT_MANAGER"|Ubiquity Unify - ubnt/ubnt
+<title>Dell OpenManage Switch Administrator</title>;window.top.location.href = "dell_login.html";login_text|Dell OpenManage Switch root / calvin
+WSMAN library is loaded here as;FRAMEHEADER;function loadFrames;top.remoteSelection = "radioJava";src="lib/eLang.js"|IBM Integrated Management Module USERID / PASSW0RD
+<title>Login</title>;label id="lausername" name="lausername";label id="lapassword" name="lapassword";label id="lapassword" name="lapassword"|Hikvision Digital Technology IP CCTV admin / 12345
+<title> SyncThru Web Service </title>;sws_loading_wait;<span>SyncThru Web Service</span>|Samsung Syncthrough Printer admin / sec00000
+<Title>ConfigSummary</Title>;<AuthUserName>Public</AuthUserName>;<ProductName>bizhub C368</ProductName>|Konica Minolta bizhub c368 default pass is either 12345678 or 1234567812345678
+body ng-app="esxUiApp";img src="images/esxi.png;class="esx-icon-help-new-window;ng-app="esxUiApp"|ESXi System pass set on install
+<head><title>Avaya B179</title>;<link href="css/b179.css";http-equiv="Content-Type"|Avaya B179 - Pin 0000
+<title id="titleLbl_id"></title>;var thisIDRACText = EntityDecode;var thisIDRACText;MAXUNLEN = 512|Dell iDrac root/calvin
+body onload="init('/wcd/system_device.xml','wcd',';href="/wcd/default.css">;FUNCVER|Konica Minolta - No Pass
+<title>KONICA MINOLTA bizhub 4702P</title>;role="heading">Embedded Web Server;label id="langlabel" aria-hidden="true"|Konica Minolta - No Pass
+<title>HD-MD4x1-4K-E</title>| Crestron admin/admin
+<span class="prtgversion">&nbsp;PRTG Network Monitor|PRTG Network Monitor ptrgadmin/ptrgadmin
+Virtual Appliance Management;VAMI.css;vmware.vami.CoreWrapper.nocache.js;gwt_historyFrame|Avamar Virtual Machine Proxy root/avam@r
+<title>AR-M277</title>;src="link_user.html";src="link_user.html";<a href="link_user.html">|Sharp AR-M277 admin/Sharp
+<title>AR-M355N</title>;<frame src="link_user.html";main_user;link_user.html|Sharp AR-M355N admin/Sharp
+<title>AR-M550U</title>;frame SRC="link_user.html";frame SRC="logo.html";frame SRC="main_user.html"|Sharp AR-M550U admin/Sharp
+<title>Dell PowerVault TL4000 Tape Library</title>;"login_form" action="/RMULogin"|Dell PowerVault TL4000 admin/secure
+<title>Top Page - MX-4141N</title>;delta_close;mainwebchange;ggt_select(2)|Sharp MX-4141N administrator/admin
+/cmc/css/loginmaster;strMaxSessions;strNotLicensed;blackpage_button_emphasized|Dell CMC root/calvin
+<title>Grandstream Device Configuration</title>;/cgi-bin/dologin;loginForm|Grandstream Device Configuration administrator/admin
+HP Color LaserJet M553;DeviceStatus/Index;/hp/device/GeneralSecurity/Index|Dell M533 administrator/admin
+img/ico/netbrain.ico;<title>Login - NetBrain IE</title>;netbrain-logo-transparent|NetBrain - admin/admin
+<title>MineMeld</title>;ng-app="minemeldWebui";ng-disabled="login.checking"|Minemeld admin/minemeld
+Red Gate Software Limited;/Content/Help/ConfigurePassword/GenericLogin.html;SQL Monitor|SQL Monitor (pass created at install)
+<title>KACE Remote Site Appliance</title>;k-main k-main-collapsed;msg_chat_unavailable|KACE Remote Site Appliance admin/admin
+<title>Log In</title>;SendLoginXML();lblLoginErrMsg;checkURL();get_statusString|Dell R1 2401 root/calvin
+<title>Login</title>;name="GENERATOR";selectLanguage();/goform/WEB_UsrLoginProc|Linear IP Camera admin/admin
+<title>User Authentication;iR-ADV C3530;id="corporateBranding";canonlogo.gif|Cannon-iR-ADV-C3530 administrator/7654321
+<title>RNPE5AA81;webArch/topPage.cgi;header.cgi;name="work"|Ricoh-Aficio-MP-C6000 admin/<blank>
+isSignedIn;currentDecimalSeparator;currentThousandSeparator;HP Color LaserJet M653|HP Color LaserJet M653 administrator/<blank>
+HP LaserJet M506;HomeDeviceName;OpenFromUsb/Index;WelcomeHeader|HP LaserJet M506 administrator/<blank>
+isSignedIn;signinUrl;PageDeviceStatus;CSRFToken;HP Color LaserJet E65050|HP Color LaserJet E65050 administrator/<blank>
+<title>Identity Services Engine</title>;class="fi-cisco-login";dojoattachpoint="userFormAP"|Cisco Identify Services admin/admin or admin/{null}
+<title>APC | Log On</title>;function placeFocus();images/smAPC.gif|APC Power Management apc/apc
+Hewlett Packard Enterprise Development;client_cert_present;AirWave Wireless nor Aruba Networks;<title>AirWave Management Platform|Aruba Airwave admin/admin
+<title>vRealize Operations Manager</title>;clarity-light;lib/clarity/clarity-icons|VMWare vRealize Operations Manager admin@local / admin
+<title>BIG-I;meta name="description";fail(function(reason);!isSupportedBrowser()|Big-IQ admin/admin
+<title>Portals Tracker</title>;authenticity_token;keepAnchorOnSignIn(this)|Redmine admin/admin
+<title>BIG-IP;F5 Networks, Inc., Seattle, Washington;content="F5 Networks, Inc.">|F5 BigIP admin/default
+<title>ClearPass - Aruba Networks</title>;ClearPass Insight;nwaCommandLinkHover|Aruba Networks Clearpass admin/eTIPS123
+Welcome - Nexus Repository Manager;content="Nexus;progressMessage(msg);title="Browse|Nexus Repository Manager admin/admin123

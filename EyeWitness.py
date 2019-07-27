@@ -12,10 +12,10 @@ import webbrowser
 
 from modules import db_manager
 from modules import objects
-from modules import phantomjs_module
 from modules import rdp_module
 from modules import selenium_module
 from modules import vnc_module
+from modules.helpers import class_info
 from modules.helpers import create_folders_css
 from modules.helpers import default_creds_category
 from modules.helpers import do_jitter
@@ -61,8 +61,6 @@ def create_cli_parser():
     protocols = parser.add_argument_group('Protocols')
     protocols.add_argument('--web', default=False, action='store_true',
                            help='HTTP Screenshot using Selenium')
-    protocols.add_argument('--headless', default=False, action='store_true',
-                           help='HTTP Screenshot using PhantomJS Headless')
     protocols.add_argument('--rdp', default=False, action='store_true',
                            help='Screenshot RDP Services')
     protocols.add_argument('--vnc', default=False, action='store_true',
@@ -145,7 +143,6 @@ def create_cli_parser():
                               "use (e.g. '80,8080')"))
     http_options.add_argument('--prepend-https', default=False, action='store_true',
                               help='Prepend http:// and https:// to URLs without either')
-    http_options.add_argument('--vhost-name', default=None,metavar='hostname', help='Hostname to use in Host header (headless + single mode only)')
     http_options.add_argument(
         '--active-scan', default=False, action='store_true',
         help='Perform live login attempts to identify credentials or login pages.')
@@ -208,19 +205,10 @@ def create_cli_parser():
         parser.print_help()
         sys.exit()
 
-    if not any((args.resume, args.web, args.vnc, args.rdp, args.all_protocols, args.headless)):
+    if not any((args.resume, args.web, args.vnc, args.rdp, args.all_protocols)):
         print "[*] Error: You didn't give me an action to perform."
         print "[*] Error: Please use --web, --rdp, or --vnc!\n"
         parser.print_help()
-        sys.exit()
-
-    if all((args.web, args.headless)):
-        print "[*] Error: Choose either web or headless"
-        parser.print_help()
-        sys.exit()
-
-    if args.vhost_name and not all((args.single, args.headless)):
-        print "[*] Error: vhostname can only be used in headless+single mode"
         sys.exit()
 
     if args.proxy_ip is not None and args.proxy_port is None:
@@ -255,18 +243,6 @@ def single_mode(cli_parsed):
         if not cli_parsed.show_selenium:
             display = Display(visible=0, size=(1920, 1080))
             display.start()
-    elif cli_parsed.headless:
-        if not os.path.isfile(
-            os.path.join(
-                os.path.dirname(
-                    os.path.realpath(__file__)
-                ), 'bin', 'phantomjs')
-        ):
-            print(" [*] Error: You are missing your phantomjs binary!")
-            print(" [*] Please run the setup script!")
-            sys.exit(0)
-        create_driver = phantomjs_module.create_driver
-        capture_host = phantomjs_module.capture_host
 
     url = cli_parsed.single
     http_object = objects.HTTPTableObject()
@@ -319,18 +295,7 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
     if cli_parsed.web:
         create_driver = selenium_module.create_driver
         capture_host = selenium_module.capture_host
-    elif cli_parsed.headless:
-        if not os.path.isfile(
-            os.path.join(
-                os.path.dirname(
-                    os.path.realpath(__file__)
-                ), 'bin', 'phantomjs')
-        ):
-            print(" [*] Error: You are missing your phantomjs binary!")
-            print(" [*] Please run the setup script!")
-            sys.exit(0)
-        create_driver = phantomjs_module.create_driver
-        capture_host = phantomjs_module.capture_host
+
     with lock:
         driver = create_driver(cli_parsed, user_agent)
     try:
@@ -338,6 +303,18 @@ def worker_thread(cli_parsed, targets, lock, counter, user_agent=None):
             http_object = targets.get()
             if http_object is None:
                 break
+            # Try to ensure object values are blank
+            http_object._category = None
+            http_object._default_creds = None
+            http_object._error_state = None
+            http_object._page_title = None
+            http_object._ssl_error = False
+            http_object.category = None
+            http_object.default_creds = None
+            http_object.error_state = None
+            http_object.page_title = None
+            http_object.resolved = None
+            http_object.source_code = None
             # Fix our directory if its resuming from a different path
             if os.path.dirname(cli_parsed.d) != os.path.dirname(http_object.screenshot_path):
                 http_object.set_paths(
@@ -441,7 +418,7 @@ def multi_mode(cli_parsed):
         pass
     else:
         url_list, rdp_list, vnc_list = target_creator(cli_parsed)
-        if any((cli_parsed.web, cli_parsed.headless)):
+        if cli_parsed.web:
             for url in url_list:
                 dbm.create_http_object(url, cli_parsed)
         for rdp in rdp_list:
@@ -449,7 +426,7 @@ def multi_mode(cli_parsed):
         for vnc in vnc_list:
             dbm.create_vnc_rdp_object('vnc', vnc, cli_parsed)
 
-    if any((cli_parsed.web, cli_parsed.headless)):
+    if cli_parsed.web:
         if cli_parsed.web and not cli_parsed.show_selenium:
             display = Display(visible=0, size=(1920, 1080))
             display.start()
@@ -598,8 +575,6 @@ if __name__ == "__main__":
         engines = []
         if cli_parsed.web:
             engines.append('Firefox')
-        if cli_parsed.headless:
-            engines.append('PhantomJS')
         if cli_parsed.vnc:
             engines.append('VNC')
         if cli_parsed.rdp:
@@ -615,7 +590,7 @@ if __name__ == "__main__":
         create_folders_css(cli_parsed)
 
     if cli_parsed.single:
-        if any((cli_parsed.web, cli_parsed.headless)):
+        if cli_parsed.web:
             single_mode(cli_parsed)
         elif cli_parsed.rdp:
             single_vnc_rdp(cli_parsed, 'rdp')
@@ -627,7 +602,9 @@ if __name__ == "__main__":
                 files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
                 for f in files:
                     webbrowser.open(f)
+                    class_info()
                     sys.exit()
+        class_info()
         sys.exit()
 
     if cli_parsed.f is not None or cli_parsed.x is not None:
@@ -642,5 +619,7 @@ if __name__ == "__main__":
             files = glob.glob(os.path.join(cli_parsed.d, '*report.html'))
             for f in files:
                 webbrowser.open(f)
+                class_info()
                 sys.exit()
+        class_info()
         sys.exit()

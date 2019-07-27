@@ -12,6 +12,7 @@ except:
 
 try:
     from selenium import webdriver
+    from selenium.webdriver.firefox.options import Options
     from selenium.common.exceptions import NoAlertPresentException
     from selenium.common.exceptions import TimeoutException
     from selenium.common.exceptions import UnexpectedAlertPresentException
@@ -73,14 +74,15 @@ def create_driver(cli_parsed, user_agent=None):
     try:
         capabilities = DesiredCapabilities.FIREFOX.copy()
         capabilities.update({'acceptInsecureCerts': True})
-        driver = webdriver.Firefox(profile, capabilities=capabilities)
+        options = Options()
+        options.add_argument("--headless")
+        driver = webdriver.Firefox(profile, capabilities=capabilities, firefox_options=options)
         driver.set_page_load_timeout(cli_parsed.timeout)
         return driver
     except Exception as e:
         if 'Failed to find firefox binary' in str(e):
             print 'Firefox not found!'
-            print 'You can fix this by installing Firefox/Iceweasel\
-             or using phantomjs/ghost'
+            print 'You can fix this by installing Firefox/Iceweasel'
         else:
             print e
         sys.exit()
@@ -269,5 +271,8 @@ def capture_host(cli_parsed, http_object, driver, ua=None):
         with open(http_object.source_path, 'w') as f:
             f.write('Cannot render webpage')
         http_object.headers = {'Cannot Render Web Page': 'n/a'}
+    except IOError:
+        print("[*] ERROR: URL too long, surpasses max file length.")
+        print("[*] ERROR: Skipping: " + http_object.remote_system)
 
     return http_object, driver

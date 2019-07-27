@@ -26,6 +26,18 @@ if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep
   osinfo="Kali2"
 fi
 
+if [[ `(lsb_release -sd || grep ^PRETTY_NAME /etc/os-release) 2>/dev/null | grep "Parrot GNU/Linux.*\(4\)"` ]]; then
+  osinfo="Parrot"
+fi
+
+# Centos detection
+if grep -q -i "CentOS" /etc/redhat-release
+then
+  osinfo="centos"
+  echo "[*] Centos detected"
+fi
+
+
 # make sure we run from this directory
 pushd . > /dev/null && cd "$(dirname "$0")"
 
@@ -35,7 +47,9 @@ case ${osinfo} in
   Kali2)
     apt-get update
     echo '[*] Installing Kali2 Dependencies'
-    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
+    echo '[*] Upgrading paramiko'
+    pip install --upgrade paramiko
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -44,7 +58,7 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
@@ -52,21 +66,26 @@ case ${osinfo} in
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-      wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali2phantomjs
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux64.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux64.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+      rm geckodriver-v0.24.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     else
-      wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantom32kali2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux32.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux32.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+      rm geckodriver-v0.24.0-linux32.tar.gz
       mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
     fi
-    chmod +x phantomjs
     cd ..
   ;;
   # Kali Dependency Installation
@@ -74,6 +93,8 @@ case ${osinfo} in
     apt-get update
     echo '[*] Installing Kali Dependencies'
     apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr
+    echo '[*] Upgrading paramiko'
+    pip install --upgrade paramiko
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -82,26 +103,45 @@ case ${osinfo} in
     rm -rf rdpy
     echo '[*] Installing Python Modules'
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1 --upgrade
     pip install pyvirtualdisplay
     pip install pytesseract
     cd ../bin/
-    MACHINE_TYPE=`uname -m`
-    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-      wget -O phantomjs https://www.christophertruncer.com/InstallMe/phantomjs
-    else
-      wget -O phantomjs https://www.christophertruncer.com/InstallMe/kali32phantomjs
-    fi
-    chmod +x phantomjs
+    cd ..
+  ;;
+   # Parrot Dependency Installation
+  Parrot)
+    apt-get update
+    echo '[*] Installing Parrot Dependencies'
+    apt-get install -y python-qt4 python-pip xvfb python-netaddr python-dev tesseract-ocr firefox-esr
+    echo '[*] Upgrading paramiko'
+    pip install --upgrade paramiko
+    echo '[*] Installing RDPY'
+    git clone https://github.com/ChrisTruncer/rdpy.git
+    cd rdpy
+    python setup.py install
+    cd ..
+    rm -rf rdpy
+    echo '[*] Installing Python Modules'
+    pip install fuzzywuzzy
+    pip install selenium --upgrade
+    pip install python-Levenshtein
+    pip install pyasn1 --upgrade
+    pip install pyvirtualdisplay
+    pip install pytesseract
+    cd ../bin/
     cd ..
   ;;
   # Debian 7+ Dependency Installation
   Debian)
     apt-get update
     echo '[*] Installing Debian Dependencies'
-    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr
+    apt-get install -y cmake qt4-qmake python xvfb python-qt4 python-pip python-netaddr python-dev tesseract-ocr firefox-esr
+    echo '[*] Upgrading paramiko and pyopenssl'
+    pip install --upgrade paramiko
+    pip install -U pyopenssl
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -112,7 +152,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
@@ -122,31 +162,25 @@ case ${osinfo} in
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-      wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux64.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux64.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+      rm geckodriver-v0.24.0-linux64.tar.gz
       mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
-      tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
-      cd phantomjs-2.1.1-linux-x86_64/bin/
-      mv phantomjs ../../
-      cd ../..
-      rm -rf phantomjs-2.1.1-linux-x86_64
-      rm phantomjs-2.1.1-linux-x86_64.tar.bz2
     else
-      wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux32.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux32.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+      rm geckodriver-v0.24.0-linux32.tar.gz
       mv geckodriver /usr/sbin
+      if [ -e /usr/bin/geckodriver ]
+      then
+      	rm /usr/bin/geckodriver
+      fi
       ln -s /usr/sbin/geckodriver /usr/bin/geckodriver
-      tar -xvf phantomjs-2.1.1-linux-i686.tar.bz2
-      cd phantomjs-2.1.1-linux-i686/bin/
-      mv phantomjs ../../
-      cd ../..
-      rm -rf phantomjs-2.1.1-linux-i686
-      rm phantomjs-2.1.1-linux-i686.tar.bz2
     fi
     cd ..
   ;;
@@ -154,7 +188,8 @@ case ${osinfo} in
   Ubuntu)
     apt-get update
     echo '[*] Installing Ubuntu Dependencies'
-    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr
+    apt-get install -y cmake qt4-qmake python python-qt4 python-pip xvfb python-netaddr python-dev libffi-dev libssl-dev tesseract-ocr firefox
+    pip install cryptography --upgrade
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
     cd rdpy
@@ -165,7 +200,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
@@ -178,34 +213,20 @@ case ${osinfo} in
     cd ../bin/
     MACHINE_TYPE=`uname -m`
     if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-      wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux64.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux64.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux64.tar.gz
+      rm geckodriver-v0.24.0-linux64.tar.gz
       mv geckodriver /usr/sbin
-      tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
-      cd phantomjs-2.1.1-linux-x86_64/bin/
-      mv phantomjs ../../
-      cd ../..
-      rm -rf phantomjs-2.1.1-linux-x86_64
-      rm phantomjs-2.1.1-linux-x86_64.tar.bz2
     else
-      wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux32.tar.gz
-      tar -xvf geckodriver-v0.13.0-linux32.tar.gz
-      rm geckodriver-v0.13.0-linux64.tar.gz
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz
+      tar -xvf geckodriver-v0.24.0-linux32.tar.gz
+      rm geckodriver-v0.24.0-linux32.tar.gz
       mv geckodriver /usr/sbin
-      tar -xvf phantomjs-2.1.1-linux-i686.tar.bz2
-      cd phantomjs-2.1.1-linux-i686/bin/
-      mv phantomjs ../../
-      cd ../..
-      rm -rf phantomjs-2.1.1-linux-i686
-      rm phantomjs-2.1.1-linux-i686.tar.bz2
     fi
     cd ..
   ;;
   # CentOS 6.5+ Dependency Installation
-  CentOS)
+  centos)
     echo '[Warning]: EyeWitness on CentOS Requires EPEL Repository!'
     read -p '[?] Install and Enable EPEL Repository? (y/n): ' epel
     if [ "${epel}" == 'y' ]; then
@@ -217,7 +238,7 @@ case ${osinfo} in
     fi
     echo '[*] Installing CentOS Dependencies'
     yum install cmake python python-pip PyQt4 PyQt4-webkit \
-                python-argparse xvfb python-netaddr python-dev tesseract-ocr
+                python-argparse xorg-x11-server-Xvfb python-netaddr python-devel tesseract firefox
     echo
     echo '[*] Installing RDPY'
     git clone https://github.com/ChrisTruncer/rdpy.git
@@ -228,7 +249,7 @@ case ${osinfo} in
     echo '[*] Installing Python Modules'
     pip install python_qt_binding
     pip install fuzzywuzzy
-    pip install selenium==3.5.0
+    pip install selenium --upgrade
     pip install python-Levenshtein
     pip install pyasn1
     pip install pyvirtualdisplay
@@ -236,24 +257,6 @@ case ${osinfo} in
     pip install pytesseract
     echo
     cd ../bin/
-    MACHINE_TYPE=`uname -m`
-    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-      wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-      tar -xvf phantomjs-2.1.1-linux-x86_64.tar.bz2
-      cd phantomjs-2.1.1-linux-x86_64/bin/
-      mv phantomjs ../../
-      cd ../..
-      rm -rf phantomjs-2.1.1-linux-x86_64
-      rm phantomjs-2.1.1-linux-x86_64.tar.bz2
-    else
-      wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36" https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
-      tar -xvf phantomjs-2.1.1-linux-i686.tar.bz2
-      cd phantomjs-2.1.1-linux-i686/bin/
-      mv phantomjs ../../
-      cd ../..
-      rm -rf phantomjs-2.1.1-linux-i686
-      rm phantomjs-2.1.1-linux-i686.tar.bz2
-    fi
     cd ..
   ;;
   # Notify Manual Installation Requirement And Exit
@@ -267,4 +270,6 @@ esac
 # Finish Message
 popd > /dev/null
 echo '[*] Setup script completed successfully, enjoy EyeWitness! :)'
+echo '[*] Be sure to check out FortyNorth Security!'
+echo '[*] https://www.fortynorthsecurity.com'
 echo

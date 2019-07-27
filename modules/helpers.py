@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 import hashlib
 import os
 import platform
@@ -73,7 +74,7 @@ class XML_Parser(xml.sax.ContentHandler):
                 elif "http-alt" == attributes['name']:
                     self.protocol = "http"
                 elif "tunnel" in attributes:
-                    if "ssl" in attributes['tunnel']:
+                    if "ssl" in attributes['tunnel'] and not "smtp" in attributes['name'] and not "imap" in attributes['name'] and not "pop3" in attributes['name']:
                         self.protocol = "https"
                 elif "vnc" in attributes['name']:
                     self.protocol = "vnc"
@@ -288,9 +289,8 @@ def duplicate_check(cli_object):
     # if it finds any, it removes them and uses a single image
     # reducing file size for output
     # dict = {sha1hash: [pic1, pic2]}
-    hash_files = {}
-    report_files = []
 
+    hash_files = {}
     for name in glob.glob(cli_object.d + '/screens/*.png'):
         with open(name, 'rb') as screenshot:
             pic_data = screenshot.read()
@@ -300,8 +300,14 @@ def duplicate_check(cli_object):
         else:
             hash_files[md5_hash] = [name.split('/')[-2] + '/' + name.split('/')[-1]]
 
+    report_files = []
     for html_file in glob.glob(cli_object.d + '/*.html'):
-        report_files.append(html_file)
+        with open(html_file, 'r') as report:
+            page_text = report.read()
+            report_files.append({"name": html_file, "content": page_text})
+
+    with open(cli_object.d + "/Requests.csv", 'r') as csv_port_file:
+        requests_file = csv_port_file.read()
 
     for hex_value, file_dict in hash_files.items():
         total_files = len(file_dict)
@@ -309,12 +315,17 @@ def duplicate_check(cli_object):
             original_pic_name = file_dict[0]
             for num in xrange(1, total_files):
                 next_filename = file_dict[num]
-                for report_page in report_files:
-                    with open(report_page, 'r') as report:
-                        page_text = report.read()
-                    page_text = page_text.replace(next_filename, original_pic_name)
-                    with open(report_page, 'w') as report_out:
-                        report_out.write(page_text)
+                for report in report_files:
+                    if next_filename in report["content"]:
+                        report["content"] = report["content"].replace(next_filename, original_pic_name)
+                        with open(report["name"], 'w') as report_out:
+                            report_out.write(report["content"])
+
+                if next_filename in requests_file:
+                    requests_file = requests_file.replace(next_filename, original_pic_name)
+                    with open(cli_object.d + "/Requests.csv", 'w') as csv_port_writer:
+                        csv_port_writer.write(requests_file)
+
                 os.remove(cli_object.d + '/' + next_filename)
     return
 
@@ -397,7 +408,7 @@ def textfile_parser(file_to_parse, cli_obj):
                         rdp.append(line)
                     if cli_obj.vnc:
                         vnc.append(line)
-                    if cli_obj.web or cli_obj.headless:
+                    if cli_obj.web:
                         if cli_obj.prepend_https:
                             urls.append("http://" + line)
                             urls.append("https://" + line)
@@ -409,7 +420,7 @@ def textfile_parser(file_to_parse, cli_obj):
                         urls.append(line + ':' + str(port))
                 else:
 
-                    if cli_obj.web or cli_obj.headless:
+                    if cli_obj.web:
                         if cli_obj.prepend_https:
                             for port in cli_obj.only_ports:
                                 urls.append("http://" + line + ':' + str(port))
@@ -424,7 +435,12 @@ def textfile_parser(file_to_parse, cli_obj):
             url_again = url_again.strip()
             complete_urls.append(url_again)
             if url_again.count(":") == 2:
-                port_number = int(url_again.split(":")[2].split("/")[0])
+            	try:
+                	port_number = int(url_again.split(":")[2].split("/")[0])
+                except ValueError:
+                	print("ERROR: You potentially provided an mal-formed URL!")
+                	print("ERROR: URL is - " + url_again)
+                	sys.exit()
                 hostname_again = url_again.split(":")[0] + ":" + url_again.split(":")[1] + ":" + url_again.split(":")[2]
                 if port_number in openports:
                     openports[port_number] += "," + hostname_again
@@ -639,6 +655,8 @@ def title_screen():
         os.system('clear')
     print "#" * 80
     print "#" + " " * 34 + "EyeWitness" + " " * 34 + "#"
+    print "#" * 80
+    print "#" + " " * 11 + "FortyNorth Security - https://www.fortynorthsecurity.com" + " " * 11 + "#"
     print "#" * 80 + "\n"
 
     python_info = sys.version_info
@@ -851,3 +869,31 @@ def open_file_input(cli_parsed):
     else:
         print '[*] No report files found to open, perhaps no hosts were successful'
         return False
+
+def class_info():
+    class_image = '''MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+M                                                                M
+M       .”cCCc”.                                                 M
+M      /cccccccc\\           Our Upcoming Trainings:              M
+M      §cccccccc|                                                M
+M      :ccccccccP           NOLACON  >> May 13-16 2019           M
+M      \\cccccccc()                      New Orleans              M
+M       \\ccccccccD                      www.nolacon.com          M
+M       |cccccccc\\       _                                       M
+M       |ccccccccc)     //  BLACKHAT >> August 3-6               M
+M       |cccccc|=      //               Las Vegas                M
+M      /°°°°°°”-.     (CCCC)            www.blackhat.com/us-19   M
+M      ;----._  _._   |cccc|                                     M
+M   .*°       °°   °. \\cccc/                                     M
+M  /  /       (      )/ccc/                                      M
+M  |_/        |    _.°cccc|                                      M
+M  |/         °^^^°ccccccc/                                      M
+M  /            \\cccccccc/                                       M
+M /              \\cccccc/                                        M
+M |                °*°                                           M
+M /                  \\      Psss. Follow us on >> Twitter        M
+M °*-.__________..-*°°                         >> Facebook       M
+M  \\WWWWWWWWWWWWWWWW/                          >> LinkedIn       M
+M   \\WWWWWWWWWWWWWW/                                             M
+MMMMM|WWWWWWWWWWWW|MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'''
+    print(class_image)
